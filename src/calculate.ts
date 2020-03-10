@@ -1,51 +1,9 @@
-enum NodeID {
-  NUMBER = 'NUMBER',
-  PLUS = 'PLUS',
-  MINUS = 'MINUS',
-  TIMES = 'TIMES',
-  DIVIDE = 'DIVIDE',
-  OPENBRACKET = 'OPENBRACKET',
-  CLOSEBRACKET = 'CLOSEBRACKET',
-}
+import TreeNode from './TreeNode';
 
-class TreeNode {
-  ID: NodeID;
-  precedence: number;
-  number: number | null;
-  parent: TreeNode | null;
-  left: TreeNode | null;
-  right: TreeNode | null;
-  constructor(ID, precedence, number) {
-    this.ID = ID;
-    this.precedence = precedence;
-    this.number = number;
-  }
-
-  static getNode(value: string) {
-    if (isNumber(value)) {
-      return new TreeNode(NodeID.NUMBER, 10, Number(value));
-    }
-    switch (value) {
-      case '+':
-        return new TreeNode(NodeID.PLUS, 2, Number(value));
-      case '-':
-        return new TreeNode(NodeID.MINUS, 2, Number(value));
-      case '*':
-        return new TreeNode(NodeID.TIMES, 4, Number(value));
-      case '/':
-        return new TreeNode(NodeID.DIVIDE, 4, Number(value));
-      case '(':
-        return new TreeNode(NodeID.OPENBRACKET, 1, Number(value));
-      case ')':
-        return new TreeNode(NodeID.CLOSEBRACKET, 1, Number(value));
-    }
-  }
-}
-
-function calculate(input: string[]) {
+function calculate(tokens: string[]) {
   let currentNode = null;
-  input.forEach(value => {
-    currentNode = insertNodeItem(currentNode, TreeNode.getNode(value));
+  tokens.forEach(value => {
+    currentNode = insertNode(currentNode, TreeNode.getNode(value));
   });
   const root = findRoot(currentNode);
   return calculateNode(root);
@@ -66,38 +24,37 @@ function calculateNode(node: TreeNode): number {
   }
 }
 
-const insertNodeItem = (currentNode: TreeNode, newItem: TreeNode): TreeNode => {
+const insertNode = (currentNode: TreeNode, newNode: TreeNode): TreeNode => {
   if (!currentNode) {
-    currentNode = newItem;
+    currentNode = newNode;
     return currentNode;
   }
-  if (currentNode.precedence < newItem.precedence) {
-    connectTwoNodes(currentNode, newItem, 'right');
-    currentNode = newItem;
+  if (isPrecedenceOfCurrentNodeHigherThannewNode(currentNode, newNode)) {
+    connectTwoNodes(currentNode, newNode, 'right');
+    currentNode = newNode;
     return currentNode;
   }
-  if (newItem.ID === 'OPENBRACKET') {
-    connectTwoNodes(currentNode, newItem, 'right');
-    currentNode = newItem;
+  if (isOpenBracket(newNode)) {
+    connectTwoNodes(currentNode, newNode, 'right');
+    currentNode = newNode;
     return currentNode;
   }
-  if (newItem.ID === 'CLOSEBRACKET') {
+  if (isCloseBracket(newNode)) {
     const openBracketNode = findOpenBracket(currentNode);
     connectTwoNodes(openBracketNode.parent, openBracketNode.right, 'right');
     currentNode = openBracketNode.parent;
     return currentNode;
   }
   while (
-    !isRoot(currentNode) &&
-    currentNode.parent.precedence >= newItem.precedence
+    isPrecedenceOfCurrentParentNodeHigherThanNewNode(currentNode, newNode)
   ) {
     currentNode = currentNode.parent;
   }
   if (!isRoot(currentNode)) {
-    connectTwoNodes(currentNode.parent, newItem, 'right');
+    connectTwoNodes(currentNode.parent, newNode, 'right');
   }
-  connectTwoNodes(newItem, currentNode, 'left');
-  currentNode = newItem;
+  connectTwoNodes(newNode, currentNode, 'left');
+  currentNode = newNode;
   return currentNode;
 };
 
@@ -125,12 +82,32 @@ function findRoot(node: TreeNode): TreeNode {
   return node;
 }
 
-function isRoot(node: TreeNode) {
-  return !node.parent;
+function isPrecedenceOfCurrentNodeHigherThannewNode(
+  currentNode: TreeNode,
+  newNode: TreeNode,
+) {
+  return currentNode.precedence < newNode.precedence;
 }
 
-function isNumber(value: string): boolean {
-  return String(Number(value)) === value;
+function isPrecedenceOfCurrentParentNodeHigherThanNewNode(
+  currentNode: TreeNode,
+  newNode: TreeNode,
+) {
+  return (
+    !isRoot(currentNode) && currentNode.parent.precedence >= newNode.precedence
+  );
+}
+
+function isOpenBracket(node: TreeNode) {
+  return node.ID === 'OPENBRACKET';
+}
+
+function isCloseBracket(node: TreeNode) {
+  return node.ID === 'CLOSEBRACKET';
+}
+
+function isRoot(node: TreeNode) {
+  return !node.parent;
 }
 
 export default calculate;
