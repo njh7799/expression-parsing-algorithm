@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "sourceMap": false,
+    "target": "es6",
+    "module": "commonjs",
+    "baseUrl": "./src",
+    "allowJs": true,
+    "esModuleInterop": true,
+    "jsx": "react"
+  },
+  "include": ["src/**/*.ts", "src/calculate.ts"],
+  "exclude": ["node_modules"]
+}
