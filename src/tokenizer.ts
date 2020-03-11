@@ -11,8 +11,11 @@ const isNumber = value => {
 
 function tokenizer(expression: string): string[] {
   const tokens = [];
-  [].forEach.call(expression, value => {
-    if (isOperator(value)) {
+  [].forEach.call(expression, (value, key) => {
+    const prevValue = expression[key - 1];
+    if (isNegative(value, prevValue)) {
+      tokens.push('negative');
+    } else if (isOperator(value)) {
       tokens.push(value);
     } else if (isNewNumber(value, tokens)) {
       tokens.push(value);
@@ -23,9 +26,22 @@ function tokenizer(expression: string): string[] {
   return tokens;
 }
 
+function isNegative(value, prevValue) {
+  if (value !== '-') {
+    return false;
+  }
+  if (!prevValue) {
+    return true;
+  }
+  if (prevValue === '(') {
+    return true;
+  }
+  return false;
+}
+
 function isNewNumber(value, tokens) {
   if (!topOfArray(tokens)) return true;
-  return isOperator(topOfArray(tokens)) && isNumber(value);
+  return !isNumber(topOfArray(tokens)) && isNumber(value);
 }
 
 function isContinuingNumber(value, tokens) {

@@ -20,6 +20,8 @@ function calculateNode(node: TreeNode): number {
       return calculateNode(node.left) + calculateNode(node.right);
     case 'MINUS':
       return calculateNode(node.left) - calculateNode(node.right);
+    case 'NEGATIVE':
+      return -calculateNode(node.right);
     case 'TIMES':
       return calculateNode(node.left) * calculateNode(node.right);
     case 'DIVIDE':

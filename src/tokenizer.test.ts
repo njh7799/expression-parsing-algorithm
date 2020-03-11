@@ -40,4 +40,31 @@ describe('tokenizer', () => {
     ];
     expect(output).toEqual(expectedOutput);
   });
+
+  it('should tokenize expression', () => {
+    // given
+    const input = '-1-((-1)-(-1))';
+
+    // when
+    const output = tokenizer(input);
+
+    // then
+    const expectedOutput = [
+      'negative',
+      '1',
+      '-',
+      '(',
+      '(',
+      'negative',
+      '1',
+      ')',
+      '-',
+      '(',
+      'negative',
+      '1',
+      ')',
+      ')',
+    ];
+    expect(output).toEqual(expectedOutput);
+  });
 });

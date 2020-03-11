@@ -1,11 +1,12 @@
 enum NodeID {
+  OPENBRACKET = 'OPENBRACKET',
+  CLOSEBRACKET = 'CLOSEBRACKET',
   NUMBER = 'NUMBER',
   PLUS = 'PLUS',
   MINUS = 'MINUS',
+  NEGATIVE = 'NEGATIVE',
   TIMES = 'TIMES',
   DIVIDE = 'DIVIDE',
-  OPENBRACKET = 'OPENBRACKET',
-  CLOSEBRACKET = 'CLOSEBRACKET',
 }
 
 class TreeNode {
@@ -26,18 +27,20 @@ class TreeNode {
       return new TreeNode(NodeID.NUMBER, 10, Number(value));
     }
     switch (value) {
-      case '+':
-        return new TreeNode(NodeID.PLUS, 2, Number(value));
-      case '-':
-        return new TreeNode(NodeID.MINUS, 2, Number(value));
-      case '*':
-        return new TreeNode(NodeID.TIMES, 4, Number(value));
-      case '/':
-        return new TreeNode(NodeID.DIVIDE, 4, Number(value));
       case '(':
-        return new TreeNode(NodeID.OPENBRACKET, 1, Number(value));
+        return new TreeNode(NodeID.OPENBRACKET, 1, null);
       case ')':
-        return new TreeNode(NodeID.CLOSEBRACKET, 1, Number(value));
+        return new TreeNode(NodeID.CLOSEBRACKET, 1, null);
+      case '+':
+        return new TreeNode(NodeID.PLUS, 2, null);
+      case '-':
+        return new TreeNode(NodeID.MINUS, 2, null);
+      case 'negative':
+        return new TreeNode(NodeID.NEGATIVE, 3, null);
+      case '*':
+        return new TreeNode(NodeID.TIMES, 4, null);
+      case '/':
+        return new TreeNode(NodeID.DIVIDE, 4, null);
     }
   }
 }
