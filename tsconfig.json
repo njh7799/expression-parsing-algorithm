@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "sourceMap": false,
+    "lib": ["es6", "dom", "es2017"],
     "target": "es6",
     "module": "commonjs",
     "baseUrl": "./src",

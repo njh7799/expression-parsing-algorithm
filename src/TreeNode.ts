@@ -42,8 +42,8 @@ class TreeNode {
   }
 }
 
-function isNumber(value: string): boolean {
-  return String(Number(value)) === value;
+function isNumber(value): boolean {
+  return !isNaN(value);
 }
 
 export default TreeNode;

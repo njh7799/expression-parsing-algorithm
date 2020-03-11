@@ -1,11 +1,14 @@
 import TreeNode from './TreeNode';
+import tokenizer from './tokenizer';
 
-function calculate(tokens: string[]) {
-  let currentNode = null;
+function calculate(expression: string) {
+  const tokens = tokenizer(expression);
+  let currentNode = insertNode(null, TreeNode.getNode('('));
   tokens.forEach(value => {
     currentNode = insertNode(currentNode, TreeNode.getNode(value));
   });
-  const root = findRoot(currentNode);
+  const openbracket = findOpenBracket(currentNode);
+  const root = openbracket.right;
   return calculateNode(root);
 }
 
@@ -21,16 +24,13 @@ function calculateNode(node: TreeNode): number {
       return calculateNode(node.left) * calculateNode(node.right);
     case 'DIVIDE':
       return calculateNode(node.left) / calculateNode(node.right);
+    default:
+      throw new SyntaxError(node.ID);
   }
 }
 
 const insertNode = (currentNode: TreeNode, newNode: TreeNode): TreeNode => {
   if (!currentNode) {
-    currentNode = newNode;
-    return currentNode;
-  }
-  if (isPrecedenceOfCurrentNodeHigherThannewNode(currentNode, newNode)) {
-    connectTwoNodes(currentNode, newNode, 'right');
     currentNode = newNode;
     return currentNode;
   }
@@ -45,15 +45,13 @@ const insertNode = (currentNode: TreeNode, newNode: TreeNode): TreeNode => {
     currentNode = openBracketNode.parent;
     return currentNode;
   }
-  while (
-    isPrecedenceOfCurrentParentNodeHigherThanNewNode(currentNode, newNode)
-  ) {
+  while (comparePrecedence(currentNode, newNode) >= 0) {
     currentNode = currentNode.parent;
   }
-  if (!isRoot(currentNode)) {
-    connectTwoNodes(currentNode.parent, newNode, 'right');
+  if (currentNode.right) {
+    connectTwoNodes(newNode, currentNode.right, 'left');
   }
-  connectTwoNodes(newNode, currentNode, 'left');
+  connectTwoNodes(currentNode, newNode, 'right');
   currentNode = newNode;
   return currentNode;
 };
@@ -75,27 +73,8 @@ function findOpenBracket(node: TreeNode): TreeNode {
   return node;
 }
 
-function findRoot(node: TreeNode): TreeNode {
-  while (node.parent) {
-    node = node.parent;
-  }
-  return node;
-}
-
-function isPrecedenceOfCurrentNodeHigherThannewNode(
-  currentNode: TreeNode,
-  newNode: TreeNode,
-) {
-  return currentNode.precedence < newNode.precedence;
-}
-
-function isPrecedenceOfCurrentParentNodeHigherThanNewNode(
-  currentNode: TreeNode,
-  newNode: TreeNode,
-) {
-  return (
-    !isRoot(currentNode) && currentNode.parent.precedence >= newNode.precedence
-  );
+function comparePrecedence(currentNode: TreeNode, newNode: TreeNode) {
+  return currentNode.precedence - newNode.precedence;
 }
 
 function isOpenBracket(node: TreeNode) {
@@ -104,10 +83,6 @@ function isOpenBracket(node: TreeNode) {
 
 function isCloseBracket(node: TreeNode) {
   return node.ID === 'CLOSEBRACKET';
-}
-
-function isRoot(node: TreeNode) {
-  return !node.parent;
 }
 
 export default calculate;
