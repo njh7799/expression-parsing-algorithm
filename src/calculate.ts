@@ -13,9 +13,13 @@ function calculate(expression: string) {
 }
 
 function calculateNode(node: TreeNode): number {
+  if (node.ID === 'NUMBER') {
+    return node.number;
+  }
+  if (!node.right) {
+    return calculateNode(node.left);
+  }
   switch (node.ID) {
-    case 'NUMBER':
-      return node.number;
     case 'PLUS':
       return calculateNode(node.left) + calculateNode(node.right);
     case 'MINUS':

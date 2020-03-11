@@ -1,7 +1,7 @@
 import calculate from './calculate';
 
 describe('', () => {
-  it('should', () => {
+  it('should calculate expression', () => {
     // given
     const input = '4*(3-2)+5';
 
@@ -13,7 +13,7 @@ describe('', () => {
     expect(output).toEqual(expectedOutput);
   });
 
-  it('should', () => {
+  it('should calculate expression', () => {
     // given
     const input = '((1+5)/(6-3))*5';
 
@@ -25,7 +25,7 @@ describe('', () => {
     expect(output).toEqual(expectedOutput);
   });
 
-  it('should tokenize expression', () => {
+  it('should calculate negative sign', () => {
     // given
     const input = '-1-((-1)-(-1))';
 
@@ -34,6 +34,18 @@ describe('', () => {
 
     // then
     const expectedOutput = -1;
+    expect(output).toEqual(expectedOutput);
+  });
+
+  it('should calculate uncompleted expression', () => {
+    // given
+    const input = '((1+2)*5)-';
+
+    // when
+    const output = calculate(input);
+
+    // then
+    const expectedOutput = 15;
     expect(output).toEqual(expectedOutput);
   });
 });
