@@ -2,6 +2,10 @@ const isOperator = value => {
   return ['+', '-', '*', '/', '%', '(', ')'].includes(value);
 };
 
+const isArithmeticOperator = value => {
+  return ['+', '-', '*', '/', '%'].includes(value);
+};
+
 const isNumber = value => {
   if (value === '.') {
     return true;
@@ -21,8 +25,13 @@ function tokenizer(expression: string): string[] {
       tokens.push(value);
     } else if (isContinuingNumber(value, tokens)) {
       tokens[tokens.length - 1] = topOfArray(tokens) + value;
+    } else {
+      throw new SyntaxError('잘못된 입력입니다.');
     }
   });
+  if (isArithmeticOperator(topOfArray(tokens))) {
+    tokens.splice(-1, 1);
+  }
   return tokens;
 }
 

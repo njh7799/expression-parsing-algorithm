@@ -3,23 +3,23 @@ import tokenizer from './tokenizer';
 
 function calculate(expression: string) {
   const tokens = tokenizer(expression);
-  let currentNode = insertNode(null, TreeNode.getNode('('));
-  tokens.forEach(value => {
-    currentNode = insertNode(currentNode, TreeNode.getNode(value));
-  });
-  const openbracket = findOpenBracket(currentNode);
-  const root = openbracket.right;
-  return calculateNode(root);
+  try {
+    let currentNode = insertNode(null, TreeNode.getNode('('));
+    tokens.forEach(value => {
+      currentNode = insertNode(currentNode, TreeNode.getNode(value));
+    });
+    const openbracket = findRoot(currentNode);
+    const root = openbracket.right;
+    return calculateNode(root);
+  } catch (err) {
+    throw new SyntaxError('수식이 잘못되었습니다!');
+  }
 }
 
 function calculateNode(node: TreeNode): number {
-  if (node.ID === 'NUMBER') {
-    return node.number;
-  }
-  if (!node.right) {
-    return calculateNode(node.left);
-  }
   switch (node.ID) {
+    case 'NUMBER':
+      return node.number;
     case 'PLUS':
       return calculateNode(node.left) + calculateNode(node.right);
     case 'MINUS':
@@ -31,7 +31,7 @@ function calculateNode(node: TreeNode): number {
     case 'DIVIDE':
       return calculateNode(node.left) / calculateNode(node.right);
     default:
-      throw new SyntaxError(node.ID);
+      throw new SyntaxError('수식이 잘못되었습니다!');
   }
 }
 
@@ -70,6 +70,13 @@ function connectTwoNodes(parent: TreeNode, child: TreeNode, direction: string) {
   if (direction === 'left') {
     parent.left = child;
   }
+}
+
+function findRoot(node: TreeNode): TreeNode {
+  while (node.parent) {
+    node = node.parent;
+  }
+  return node;
 }
 
 function findOpenBracket(node: TreeNode): TreeNode {
